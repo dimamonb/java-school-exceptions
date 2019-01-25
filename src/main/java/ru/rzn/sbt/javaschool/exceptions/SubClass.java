@@ -12,16 +12,17 @@ public class SubClass extends SuperClass {
     @Override
     public String callService(SomeService service) throws FileNotFoundException {
 
-
         try {
 
             service.doSomething();
+
         } catch (FileNotFoundException e) {
 
             throw e;
 
+
         } catch (IOException e) {
-            throw new FileNotFoundException(e.getMessage());
+            throw new RuntimeException(e.getMessage(),e);
         }
 
         return DONE;

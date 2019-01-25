@@ -20,7 +20,7 @@ public class ExceptionsLesson {
     public void logException(SomeService service, Logger log) {
         try {
             service.doSomething();
-        } catch (IOException ex){
+        } catch (IOException ex) {
             log.log(ex.getMessage());
         }
     }
@@ -38,7 +38,7 @@ public class ExceptionsLesson {
     public void closeConnection(SomeService service, Logger log) {
         try {
             service.doSomething();
-        } catch (IOException ex){
+        } catch (IOException ex) {
             log.log(ex.getMessage());
         } finally {
             service.closeConnection();
@@ -57,18 +57,21 @@ public class ExceptionsLesson {
     public void getStackTrace(SomeService service, Logger log) {
         try {
             getStackTraceDeeper(service);
-        } catch (Exception ex){
-            for (StackTraceElement s: ex.getStackTrace()) {
+        } catch (Exception ex) {
+            for (StackTraceElement s : ex.getStackTrace()) {
                 log.log(s.toString());
             }
         }
     }
+
     private void getStackTraceDeeper(SomeService service) throws IOException {
         getStackTraceEvenDeeper(service);
     }
+
     private void getStackTraceEvenDeeper(SomeService service) throws IOException {
         getStackTraceWeNeedToGoDeeper(service);
     }
+
     private void getStackTraceWeNeedToGoDeeper(SomeService service) throws IOException {
         service.doSomething();
     }
@@ -79,24 +82,24 @@ public class ExceptionsLesson {
      * Вызовите у сервиса {@code service} метод {@link SomeService#showMeTheWay()} и обработайте исключения:<br />
      * <br />
      * 1. В случае, если пол определить не удаётся ( {@link ru.rzn.sbt.javaschool.exceptions.utils.ChildException} )
-     *      отправьте в лог сообщение {@link #UNKNOWN}<br />
+     * отправьте в лог сообщение {@link #UNKNOWN}<br />
      * 2. При возникновении {@link ru.rzn.sbt.javaschool.exceptions.utils.BoyException}
-     *      отправьте в лог сообщение {@link #RIGHT}<br />
+     * отправьте в лог сообщение {@link #RIGHT}<br />
      * 3. При возникновении {@link ru.rzn.sbt.javaschool.exceptions.utils.GirlException}
-     *      отправьте в лог сообщение {@link #LEFT}<br />
+     * отправьте в лог сообщение {@link #LEFT}<br />
      * 4. Другие исключения не обрабатывайте.<br />
      * <br />
      * Внимание! Это упражнение только для изучения синтаксиса языка. Можно включить его в раздел "вредные советы" -
      * исключения не предназначены для описания стандартного поведения программы!
      */
-    public void showMeTheWay(SomeService service, Logger log){
+    public void showMeTheWay(SomeService service, Logger log) {
         try {
             service.showMeTheWay();
-        } catch (BoyException ex){
+        } catch (BoyException ex) {
             log.log(RIGHT);
-        } catch (GirlException ex){
+        } catch (GirlException ex) {
             log.log(LEFT);
-        } catch (ChildException ex){
+        } catch (ChildException ex) {
             log.log(UNKNOWN);
         }
     }
@@ -115,7 +118,7 @@ public class ExceptionsLesson {
      */
     public static class Thrower {
         public void doIt(int x) throws Exception {
-            if(x % 10 == 0) throw new Exception(ENDS_WITH_ZERO);
+            if (x % 10 == 0) throw new Exception(ENDS_WITH_ZERO);
         }
     }
 
@@ -130,14 +133,14 @@ public class ExceptionsLesson {
      * 1. с именем {@code HelloWorldException}<br />
      * 2. c дополнительным целочисленным ({@code int}) свойством {@code ErrorCode}<br />
      * 3. с единственным публичным конструктором, принимающим сообщение и код ошибки
-     *     (два параметра в указанном порядке)<br />
+     * (два параметра в указанном порядке)<br />
      * <br />
      * В методе {@link #helloWorldException} выбросьте получившееся исключение
      * с кодом ошибки {@link #THROW_THE_WORLD_CODE} и с сообщением {@link #THROW_THE_WORLD_MSG}
      */
     public void helloWorldException() throws HelloWorldException {
 
-            throw new HelloWorldException(THROW_THE_WORLD_MSG, THROW_THE_WORLD_CODE);
+        throw new HelloWorldException(THROW_THE_WORLD_MSG, THROW_THE_WORLD_CODE);
 
     }
 
@@ -149,7 +152,7 @@ public class ExceptionsLesson {
             return errorCode;
         }
 
-        public HelloWorldException(String message, int errorCode){
+        public HelloWorldException(String message, int errorCode) {
             super(message);
             this.errorCode = errorCode;
         }
@@ -169,8 +172,7 @@ public class ExceptionsLesson {
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 
         for (int i = 0; i < stack.length; i++) {
-            if(stack[i].getClassName().contains("Caller"))
-            {
+            if (stack[i].getClassName().contains("Caller")) {
                 caller = stack[i].getMethodName();
             }
         }
@@ -195,7 +197,7 @@ public class ExceptionsLesson {
         try {
             s = c.createSession();
             data = s.getData();
-        } catch (IOException e){
+        } catch (IOException e) {
             log.log(e.getMessage());
             return null;
         } finally {
@@ -218,24 +220,13 @@ public class ExceptionsLesson {
      */
     public String autocloseResource(Connection c, Logger log) {
         String data = null;
-        Session s = null;
-        try {
-            s = c.createSession();
+
+        try (
+                Session s = c.createSession();
+        ) {
             data = s.getData();
-
-        } catch (IOException ex){
+        } catch (IOException ex) {
             log.log(ex.getMessage());
-
-            return null;
-        } finally {
-
-            try {
-                if(s != null) s.close();
-                c.close();
-            } catch (IOException e) {
-                log.log(e.getMessage());
-            }
-
         }
 
         return data;
@@ -263,23 +254,23 @@ public class ExceptionsLesson {
                 s = conn.createSession();
                 try {
                     data = s.getData();
-                } catch (IOException ex){
+                } catch (IOException ex) {
                     log.log(ex.getMessage());
                     return null;
                 }
 
-            } catch (IOException e){
+            } catch (IOException e) {
                 log.log(e.getMessage());
                 return null;
             }
 
-        } catch (IOException e){
+        } catch (IOException e) {
             log.log(e.getMessage());
             return null;
         } finally {
             try {
-                if(s != null) s.close();
-                if(conn != null) conn.close();
+                if (s != null) s.close();
+                if (conn != null) conn.close();
             } catch (IOException e) {
                 log.log(e.getMessage());
             }
@@ -297,22 +288,14 @@ public class ExceptionsLesson {
      */
     public String autocloseEverything(ConnectionFactory cf, Logger log) {
         String data = null;
-        Session s = null;
-        Connection conn = null;
-        try {
-            conn = cf.createConnection();
-            s = conn.createSession();
+
+        try (Connection conn = cf.createConnection();
+             Session s = conn.createSession()
+        ) {
             data = s.getData();
-        } catch (IOException e){
+        } catch (IOException e) {
             log.log(e.getMessage());
             return null;
-        } finally {
-            try {
-                if(s != null) s.close();
-                if(conn != null) conn.close();
-            } catch (IOException e) {
-                log.log(e.getMessage());
-            }
         }
         return data;
     }
@@ -331,7 +314,6 @@ public class ExceptionsLesson {
      */
     public void helloBarbara() {
         SubClass s = new SubClass();
-
     }
 
 }
